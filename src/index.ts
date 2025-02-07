@@ -11,4 +11,13 @@ app.get('/todos/:id', async (c) => {
 	}
 });
 
+app.get('/todos', async (c) => {
+	try {
+		const { results } = await c.env.DB.prepare('SELECT * FROM todos').all();
+		return c.json(results);
+	} catch (error) {
+		return c.json({ error }, 500);
+	}
+});
+
 export default app;
