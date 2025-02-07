@@ -20,4 +20,14 @@ app.get('/todos', async (c) => {
 	}
 });
 
+app.post('todos', async (c) => {
+	const { title, description } = await c.req.json();
+	try {
+		await c.env.DB.prepare('INSERT INTO todos (title, description) VALUES (?, ?)').bind(title, description).run();
+		return c.json({ message: 'success' }, 201);
+	} catch (error) {
+		return c.json({ error }, 500);
+	}
+});
+
 export default app;
