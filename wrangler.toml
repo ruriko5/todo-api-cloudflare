@@ -1,0 +1,9 @@
+name = "todo-api-cloudflare"
+main = "src/index.ts"
+compatibility_date = "2025-02-04"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "todo-api-cloudflare"
+database_id = "95ab5da2-89a9-4644-ad6d-ccb7ecb8a1ee"
