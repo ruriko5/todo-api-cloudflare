@@ -30,4 +30,14 @@ app.post('todos', async (c) => {
 	}
 });
 
+app.delete('/todos/:id', async (c) => {
+	const id = c.req.param('id');
+	try {
+		await c.env.DB.prepare('DELETE FROM todos WHERE id = ?').bind(id).run();
+		return c.json({ message: 'success' }, 200);
+	} catch (error) {
+		return c.json({ error }, 500);
+	}
+});
+
 export default app;
