@@ -40,4 +40,15 @@ app.delete('/todos/:id', async (c) => {
 	}
 });
 
+app.put('/todos/:id', async (c) => {
+	const id = c.req.param('id');
+	const { title, description } = await c.req.json();
+	try {
+		await c.env.DB.prepare('UPDATE todos SET title = ?, description = ? WHERE id = ?').bind(title, description, id).run();
+		return c.json({ message: 'success' }, 200);
+	} catch (error) {
+		return c.json({ error }, 500);
+	}
+});
+
 export default app;
