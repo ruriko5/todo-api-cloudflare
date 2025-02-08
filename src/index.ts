@@ -1,47 +1,56 @@
+import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
+import { todos } from './db/schema';
+import { eq } from 'drizzle-orm';
+
 const app = new Hono<{ Bindings: Bindings }>().basePath('/api');
 
 app
 	.get('/todos', async (c) => {
 		try {
-			const { results } = await c.env.DB.prepare('SELECT * FROM todos').all();
+			const db = drizzle(c.env.DB);
+			const results = await db.select().from(todos);
 			return c.json(results);
 		} catch (error) {
 			return c.json({ error }, 500);
 		}
 	})
 	.get('/todos/:id', async (c) => {
-		const id = c.req.param('id');
+		const id = parseInt(c.req.param('id'));
 		try {
-			const { results } = await c.env.DB.prepare('SELECT * FROM todos WHERE id = ?').bind(id).all();
+			const db = drizzle(c.env.DB);
+			const results = await db.select().from(todos).where(eq(todos.id, id));
 			return c.json(results);
 		} catch (error) {
 			return c.json({ error }, 500);
 		}
 	})
 	.post('todos', async (c) => {
-		const { title, description } = await c.req.json();
+		const { title, description } = await c.req.json<typeof todos.$inferInsert>();
 		try {
-			await c.env.DB.prepare('INSERT INTO todos (title, description) VALUES (?, ?)').bind(title, description).run();
+			const db = drizzle(c.env.DB);
+			await db.insert(todos).values({ title, description });
 			return c.json({ message: 'success' }, 201);
 		} catch (error) {
 			return c.json({ error }, 500);
 		}
 	})
 	.delete('/todos/:id', async (c) => {
-		const id = c.req.param('id');
+		const id = parseInt(c.req.param('id'));
 		try {
-			await c.env.DB.prepare('DELETE FROM todos WHERE id = ?').bind(id).run();
+			const db = drizzle(c.env.DB);
+			await db.delete(todos).where(eq(todos.id, id));
 			return c.json({ message: 'success' }, 200);
 		} catch (error) {
 			return c.json({ error }, 500);
 		}
 	})
 	.put('/todos/:id', async (c) => {
-		const id = c.req.param('id');
-		const { title, description } = await c.req.json();
+		const id = parseInt(c.req.param('id'));
+		const { title, description } = await c.req.json<typeof todos.$inferInsert>();
 		try {
-			await c.env.DB.prepare('UPDATE todos SET title = ?, description = ? WHERE id = ?').bind(title, description, id).run();
+			const db = drizzle(c.env.DB);
+			await db.update(todos).set({ title, description }).where(eq(todos.id, id));
 			return c.json({ message: 'success' }, 200);
 		} catch (error) {
 			return c.json({ error }, 500);
