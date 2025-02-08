@@ -7,3 +7,4 @@ compatibility_flags = ["nodejs_compat"]
 binding = "DB"
 database_name = "todo-api-cloudflare"
 database_id = "95ab5da2-89a9-4644-ad6d-ccb7ecb8a1ee"
+migrations_dir = "drizzle/migrations"
